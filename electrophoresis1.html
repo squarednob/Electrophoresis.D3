@@ -1,0 +1,285 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D3 Test</title>
+<script type="text/javascript" src="d3.v3.js"></script>
+<script type="text/javascript" src="jquery-1.10.1.js"></script>
+<style> svg {background-color: #222222}</style>
+</head>
+<body>
+
+<div class="field"></div>
+
+
+
+<label><input type="radio" name="radio" value="DNA_sequence" checked>DNA sequence</label>
+<label><input type="radio" name="radio" value="Obama">Obama</label>
+<label><input type="radio" name="radio" value="free">Free</label>
+</P>
+
+
+<form method="post" id="DNA_sequence">
+<b>DNA sequence:</b><br/>
+<textarea cols=100 rows=4 class="sequence" >GTCAAGAACAACTCAATGCACTCCTAGTCACTGTCCATAGCAATGCGCAGGACATAAGACGTTGACAGATAGATTGATTAGAGACTAGAAGCCAATCGAATTCACTTCTGGTTCCGCTTGGCAGGCGGATTTTCTAGATTGAGGTTGCTATTTTCCCGGAACCCCTCTGCCTCGTGCAGAATTCGAATGAGCAAGCGGAATTGTATGTCGGCCGAATTCACTTAGATACTGGCCCACTACCGGTGTTTCTTAACGTCGGCCGGGAGCTTTATTCAACGCGTCTTCGCACGGGGGTGACACCGAATTCTACGCTTCTGGAGGCGG</textarea>
+<br/>
+<b>Choose restriction enzymes in each well. (first well is a measure):</b><br/>
+<div id="select_boxes">
+<input type="text" class="measure" style="width: 150px" value=10,200,300,2000,5000></input>
+<select name="enzymes" id="enzymes0" class="cutting" style="width: 80px">
+<option value="GAATTC" id="EcoRI">ECORI</option> //テストとしてIDで取得しただけ。
+<option value="CCWGG" id="EcoRII">EcoRII</option>
+<option value="GGATCC" id="BamHI">BamHI</option>
+<option value="AAGCTT" id="HindIII">HindIII</option>
+<option value="TCGA" id="TaqI">TaqI</option>
+<option value="GCGGCCGC" id="NotI">NotI</option>
+<option value="GANTCA" id="HinfI">HinfI</option>
+<option value="GATC" id="Sau3A">Sau3A</option>
+<option value="CAGCTG" id="PvuII">PvuII</option>
+<option value="CCCGGG" id="SmaI">SmaI</option>
+<option value="GGCC" id="HaeIII">HaeIII</option>
+<option value="GACGC" id="HgaI">HgaI</option>
+<option value="AGCT" id="AluI">AluI</option>
+<option value="GATATC" id="EcoRV">EcoRV</option>
+<option value="GGTACC" id="KpnI">KpnI</option>
+<option value="CTGCAG" id="PstI">PstI</option>
+<option value="GAGCTC" id="SacI">SacI</option>
+<option value="GTCGAC" id="SalI">SalI</option>
+<option value="AGTACT" id="ScaI">ScaI</option>
+<option value="ACTAGT" id="SpeI">SpeI</option>
+<option value="GCATGC" id="SphI">SphI</option>
+<option value="AGGCCT" id="StuI">StuI</option>
+<option value="TCTAGA" id="XbaI">XbaI</option>
+</select> 
+</div>
+</form>
+
+
+<form method="post" id="free_text">
+<b>Text:<br/></b>
+<textarea cols=100 rows=4 class="sequence"></textarea><br/>
+<b>Choose what words to cut the text in each well:</b><br/>
+<input type="text" class="measure" style="width:150px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+</form>
+
+
+<div>
+<input type="button" value="Turn ON" id="subButton"/>
+<input type="button" value="Reset" id="reset"/>
+</div>
+
+</ul>
+
+<script>
+
+var radio_switch = "#DNA_sequence";
+var measure_template = "10,20,50,100";
+
+//マージンと縦横長さの設定：
+var margin = {top: 40, right: 10, bottom: 30, left: 10},
+width = 360 - margin.left - margin.right,
+height = 500 - margin.top - margin.bottom;
+
+//マージンありの画面設定：
+var svg = d3.select(".field").append("svg")
+.attr("id","s")
+.attr("width", width + margin.left + margin.right)
+.attr("height", height + margin.top + margin.bottom)
+.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Making forms
+$(function(){
+
+$("#free_text").hide();
+makingDNAform();
+
+});
+
+var makingDNAform = function(){
+    
+    for(i=1;i<7;i++){
+        $("#enzymes0").clone().appendTo("#select_boxes").attr("id","enzymes"+i);
+    }
+}
+
+var makingObama = function(){
+    var words = ["USA","nuclear","security","privacy","growth","public","global"];
+    
+    $("#free_text textarea").val("Obabmacare");
+    $("#free_text .measure").val(measure_template);
+    $("#free_text .cutting").each(function(index,element){
+        $(this).val(words[index]);
+    });
+    
+    
+}
+
+var makingFreeform = function(){
+    
+    $("#free_text textarea").val("");
+    $("#free_text .cutting").each(function(index,element){
+        $(this).val("");
+    });
+}
+
+//radio button event listener
+$("input[name='radio']").change(function () {
+    var selected = $("input[name='radio']:checked").val();
+    
+    if (selected == "free") {
+        radio_switch = "#free_text";
+        
+        makingFreeform();
+        $("#DNA_sequence").hide();
+        $("#free_text").show();
+    };
+    if (selected == "Obama") {
+        radio_switch = "#free_text";
+        
+        makingObama();
+        $("#DNA_sequence").hide();
+        $("#free_text").show();
+    };
+    if (selected == "DNA_sequence") {
+        radio_switch = "#DNA_sequence";
+        
+        $("#free_text").hide();
+        $("#DNA_sequence").show();
+    };
+    
+});
+
+//reset
+$("#reset").on("click",this,function() {
+$(".well").contents().remove();
+$(".well").remove();
+$("defs").remove();
+});
+
+//入力からの処理関数
+$("#subButton").on("click",this,function(){
+var len_seq_container = [];
+var measure_container = [];
+
+var DNA_seq = $(radio_switch + " .sequence").val().toUpperCase();
+
+// get measure and parseint.
+var measure = $(radio_switch + " .measure").val();
+measure_container = measure.split(",");
+
+len_seq_container[0] = measure_container;
+
+$(radio_switch + " .cutting").each(function(index,element){
+var cuttings = $(element).val().toUpperCase();
+len_seq_container[index+1] = cutSeq(DNA_seq,cuttings); //ウェルと制限酵素をforループにするように。
+});
+
+displayGel(len_seq_container);
+});
+
+//配列取得と制限酵素によるカット関数 //
+var cutSeq = function(DNA_seq,seq_value){
+var len_seq = [];
+
+var splitted = DNA_seq.split(seq_value);
+for (var i=0; i < splitted.length; i++){
+len_seq[i] = splitted[i].length;
+}
+return len_seq;
+};
+
+
+//ディスプレイ関数。
+var displayGel = function(len_seq_container) {
+
+//rectのエフェクト
+var rectEff = svg.append("defs")
+.append("filter").attr("id", "bands").attr("height","500%").attr("widht","100%")
+.append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", 2).attr("result", "blur")
+.append("feOffset").attr("result","offsetBlur").attr("dx",0).attr("dy",-5)
+.append("feBrend").attr("in","blur").attr("in2","offsetBlur").attr("mode","normal");
+
+//データセット
+var dataset_list = len_seq_container; //とりあえず一つの配列を入れている。
+var marged_list = d3.merge(dataset_list);
+var max_value = d3.max(marged_list);
+
+//スケール調整
+var yScale = d3.scale.sqrt() //ルートにしたが、良いかどうか分からない。文献を当たらないと。
+.domain([0, max_value]).range([height,0]);//[height,o]にすることで大きいほうが上に行く。
+
+
+//ウェルを移動しながら作成
+var wells = svg.selectAll("g .well")
+.data(dataset_list).enter()
+.append("g")
+.attr("class", "well")
+.attr("transform", function(d,i){return "translate(" + i*(width/8) + "," + 0 + ")";});
+
+var upper_tooltips = wells.append("text")
+.attr("class","tooltip")
+.attr("fill","white")
+.attr("font-size","5px")
+.attr("x",0)
+.attr("y",-(margin.top - 9))
+.text(function(d,i){if(i==0){return "";} else{return $(radio_switch+" .cutting:eq("+(i-1)+")").val();}});
+
+
+//rect作成
+var rects = wells.selectAll("g .vartical_band") 
+.data(function(d){return d;})
+.enter()
+.append("g")
+.attr("class","vartical_band");
+
+
+//rect属性
+var rectAttr = rects
+.append("rect")
+.attr("x", function(d){return 2;})
+.attr("y", function(d){return 0;})//各dを最大値とwidthにスケールを合わせた。
+.attr("width", 38)
+.attr("height", 12)
+.attr("fill", "white")
+.attr("filter", "url(#bands)")
+.transition()
+.attr("height",function(d){ return 1+((height-yScale(d))/60);})
+.attr("y",function(d){ return yScale(d);})
+.duration(3000);
+
+var each_tooltips = rects.append("text")
+                    .attr("class","tooltip")
+                    .attr("fill","white")
+                    .attr("font-size","5px")
+                    .attr("x",0)
+                    .attr("y",function(d){ return yScale(d);})
+                    .text(function(d){return d;});
+                    
+$(".tooltip").hide();
+
+};
+
+//show and hide tooltips through mousehover
+$("svg").on("mouseover",this,function(){
+    $(".tooltip").show();
+});
+
+$("svg").on("mouseout",this,function(){
+    $(".tooltip").hide();
+});                
+                
+
+</script>
+
+ 
+
+</body>
+</html>
