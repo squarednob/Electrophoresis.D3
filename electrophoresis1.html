@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>D3 Test</title>
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="d3.v3.js" charset="utf-8"></script>
+<script src="jquery-1.10.1.js"></script>
 <style> svg {background-color: #222222}</style>
 </head>
 <body>
@@ -13,9 +13,9 @@
 
 
 
-<label><input type="radio" name="radio" value="DNA_sequence" checked>DNA sequence</label>
-<label><input type="radio" name="radio" value="Obama">Obama</label>
-<label><input type="radio" name="radio" value="free">Free</label>
+<label><input type="radio" name="radio" value="#DNA_sequence" checked>DNA sequence</label>
+<label><input type="radio" name="radio" value="#Obama">Obama</label>
+<label><input type="radio" name="radio" value="#free">Free</label>
 </P>
 
 
@@ -55,7 +55,7 @@
 </form>
 
 
-<form method="post" id="free_text">
+<form method="post" id="free" class="free_area">
 <b>Text:<br/></b>
 <textarea cols=100 rows=4 class="sequence"></textarea><br/>
 <b>Choose what words to cut the text in each well:</b><br/>
@@ -78,8 +78,7 @@
 </ul>
 
 <script>
-
-var radio_switch = "#DNA_sequence";
+var radio_switch;
 var measure_template = "10,20,50,100";
 
 //マージンと縦横長さの設定：
@@ -95,121 +94,148 @@ var svg = d3.select(".field").append("svg")
 .append("g")
 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Making forms
-$(function(){
+// Making forms class
+var MakingForm = function(){
+    this.current_switch = "#DNA_sequence"; // initiate with DNA sequence.
 
-$("#free_text").hide();
-makingDNAform();
-
-});
-
-var makingDNAform = function(){
-    
-    for(i=1;i<7;i++){
+    for(var i=1;i<7;i++){
         $("#enzymes0").clone().appendTo("#select_boxes").attr("id","enzymes"+i);
         $("#enzymes"+i).children().eq(i*2).attr("selected","selected");
     }
-}
+    
+    //firstly hide free text section
+    $(".free_area").hide();
+};
 
-var makingObama = function(){
+MakingForm.prototype.showFreeForm = function(){
+        $(".free_area").show();
+        $(".free_area").attr("id","free");
+        
+        $(".free_area textarea").val("");
+        $(".free_area .cutting").each(function(index,element){
+            $(this).val("");
+         });
+         
+        
+};
+
+MakingForm.prototype.showObamaForm = function(){
     var words = ["USA","nuclear","security","privacy","growth","public","global"];
     
-    $("#free_text textarea").val("Obabmacare");
-    $("#free_text .measure").val(measure_template);
-    $("#free_text .cutting").each(function(index,element){
-        $(this).val(words[index]);
-    });
+    $(".free_area").show();
+    $(".free_area").attr("id","Obama");
     
-    
-}
+    $(".free_area textarea").val("Obabmacare");
+    $(".free_area .measure").val(measure_template);
+    $(".free_area .cutting").each(function(index,element){
+        $(this).val(words[index])});
+};
 
-var makingFreeform = function(){
+MakingForm.prototype.hideShow = function(){
+    this.switchChange();
     
-    $("#free_text textarea").val("");
-    $("#free_text .cutting").each(function(index,element){
-        $(this).val("");
-    });
-}
-
-//radio button event listener
-$("input[name='radio']").change(function () {
-    var selected = $("input[name='radio']:checked").val();
-    
-    if (selected == "free") {
-        radio_switch = "#free_text";
+    if (this.current_switch == "#free") {
         
-        makingFreeform();
         $("#DNA_sequence").hide();
-        $("#free_text").show();
-    };
-    if (selected == "Obama") {
-        radio_switch = "#free_text";
+        this.showFreeForm();
+    } else if (this.current_switch == "#Obama") {
         
-        makingObama();
         $("#DNA_sequence").hide();
-        $("#free_text").show();
-    };
-    if (selected == "DNA_sequence") {
-        radio_switch = "#DNA_sequence";
+        this.showObamaForm();
+    } else if (this.current_switch == "#DNA_sequence") {
         
-        $("#free_text").hide();
+        $(".free_area").hide();
         $("#DNA_sequence").show();
-    };
+    }
+};
+
+//switch button object.
+MakingForm.prototype.switchChange = function(){
+    var selected = $("input[name='radio']:checked").val();
+    this.current_switch = selected;
+};
+
+//ready form.
+$(function(){
+    // hide free form and show DNA form only.
+    $("#free").hide();
+    var form = new MakingForm();
+        
+    //radio button event listener
+    $("input[name='radio']").change(function () {
+        form.hideShow();
+    });
     
-});
-
-//reset
-$("#reset").on("click",this,function() {
-$(".well").contents().remove();
-$(".well").remove();
-$("defs").remove();
-});
-
-//入力からの処理関数
-$("#subButton").on("click",this,function(){
-var len_seq_container = [];
-var measure_container = [];
-
-var DNA_seq = $(radio_switch + " .sequence").val().toUpperCase();
-
-// get measure and parseint.
-var measure = $(radio_switch + " .measure").val();
-measure_container = measure.split(",");
-
-len_seq_container[0] = measure_container;
-
-$(radio_switch + " .cutting").each(function(index,element){
-    var where_to_cut = null;
+    //reset
+    $("#reset").on("click",this,function() {
+        $(".well").contents().remove();
+        $(".well").remove();
+        $("defs").remove();
+    });
     
-    var cuttings = $(element).val().toUpperCase();
-    var cuttings_id = $("option:selected",element).text();
-    if ($("#"+cuttings_id).attr("class") == "1"||"2"||"3"||"4"||"5"||"0") {
-        where_to_cut = $("#"+cuttings_id).attr("class");
-    };
-   
-    
-    len_seq_container[index+1] = cutSeq(DNA_seq,cuttings,where_to_cut); //ウェルと制限    酵素をforループにするように。
+    //start button
+    $("#subButton").on("click",this,function(){
+        radio_switch = form.current_switch;
+        var len_seq_container = cutSequences(); 
+        
+        displayGel(len_seq_container);
     });
 
-    displayGel(len_seq_container);
 });
+
+
+var cutSequences = function(){
+    var len_seq_container_proto = [];
+    
+    //assign measure into 0.
+    len_seq_container_proto[0] = makeMeasureContainer(radio_switch);
+    
+    //assign selected cuttted secuence.
+    $(radio_switch + " .cutting").each(function(index,element){
+        var where_to_cut = null;
+        var cuttings = $(element).val().toUpperCase();
+
+        var cuttings_id = $("option:selected",element).text();
+        if ($("#"+cuttings_id).attr("class") == "1"||"2"||"3"||"4"||"5"||"0") {
+            where_to_cut = $("#"+cuttings_id).attr("class");
+        }
+        len_seq_container_proto[index+1] = cutSeq(cuttings,where_to_cut);
+    });
+    
+    return len_seq_container_proto;
+};
+
+var makeMeasureContainer = function(){
+    var parsed_measure = [];
+    
+    var measure = $(radio_switch + " .measure").val();
+    var measure_container = measure.split(",");
+    
+    for(var i=0; i<measure_container.length; i++){
+        parsed_measure[i] = parseInt(measure_container[i]);
+    }
+    
+    console.log(parsed_measure);
+    return parsed_measure;
+};
+
 
 //配列取得と制限酵素によるカット関数 //
-var cutSeq = function(DNA_seq,seq_value,where_to_cut){
-var len_seq = [];
+var cutSeq = function(cuttings,where_to_cut){
+    var len_seq = [];
+    var DNA_seq = $(radio_switch + " .sequence").val().toUpperCase();
 
-var splitted = DNA_seq.split(seq_value);
-for (var i=0; i < splitted.length; i++){
-len_seq[i] = splitted[i].length;
-}
+    var splitted = DNA_seq.split(cuttings);
+    for (var i=0; i < splitted.length; i++){
+        len_seq[i] = splitted[i].length;
+    }
+    
+    //distribute vanished sequence by split.
+    return distributeCuttedSequence(cuttings,len_seq,where_to_cut);
 
-len_seq = distributeCuttedSequence(seq_value,len_seq,where_to_cut); //distribute vanished sequence by split.
-
-return len_seq;
 };
 
 var distributeCuttedSequence = function(seq_value,len_seq,where_to_cut){
-     console.log(len_seq);
      if(where_to_cut){
          var left = parseInt(where_to_cut);
          var right = seq_value.length - parseInt(where_to_cut);
@@ -218,18 +244,14 @@ var distributeCuttedSequence = function(seq_value,len_seq,where_to_cut){
          } else{
              for(var i=0; i<len_seq.length-1;i++){
                  len_seq[i] += left;
-             };
-             for(var i=1; i<len_seq.length;i++){
+             }
+             for(i=1; i<len_seq.length;i++){
                  len_seq[i] += right;
-             };
+             }
          }
-         
      }
-     console.log(left,right,len_seq);
      return len_seq;
-     
-     
-}
+};
 
 //ディスプレイ関数。
 var displayGel = function(len_seq_container) {
@@ -241,19 +263,17 @@ var rectEff = svg.append("defs")
 .append("feOffset").attr("result","offsetBlur").attr("dx",0).attr("dy",-5)
 .append("feBrend").attr("in","blur").attr("in2","offsetBlur").attr("mode","normal");
 
-//データセット
-var dataset_list = len_seq_container; //とりあえず一つの配列を入れている。
-var marged_list = d3.merge(dataset_list);
-var max_value = d3.max(marged_list);
+//make max value
+    var marged_list = d3.merge(len_seq_container);
+    var max_value = d3.max(marged_list);
 
 //スケール調整
 var yScale = d3.scale.sqrt() //ルートにしたが、良いかどうか分からない。文献を当たらないと。
 .domain([0, max_value]).range([height,0]);//[height,o]にすることで大きいほうが上に行く。
 
-
 //ウェルを移動しながら作成
 var wells = svg.selectAll("g .well")
-.data(dataset_list).enter()
+.data(len_seq_container).enter()
 .append("g")
 .attr("class", "well")
 .attr("transform", function(d,i){return "translate(" + i*(width/8) + "," + 0 + ")";});
@@ -297,8 +317,7 @@ var each_tooltips = rects.append("text")
                     .attr("y",function(d){ return yScale(d);})
                     .text(function(d){return d;});
                     
-$(".tooltip").hide();
-
+    $(".tooltip").hide();
 };
 
 //show and hide tooltips through mousehover
@@ -309,11 +328,7 @@ $("svg").on("mouseover",this,function(){
 $("svg").on("mouseout",this,function(){
     $(".tooltip").hide();
 });                
-                
 
 </script>
-
- 
-
 </body>
 </html>
