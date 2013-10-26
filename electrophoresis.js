@@ -17,6 +17,7 @@ var svg = d3.select(".field").append("svg")
 // Making forms class
 var MakingForm = function(){
     this.current_switch = "#DNA_sequence"; // initiate with DNA sequence.
+    $("#DNA_sequence textarea").load("pcrii_seq.txt");
 
     for(var i=1;i<7;i++){
         $("#enzymes0").clone().appendTo("#select_boxes").attr("id","enzymes"+i);
@@ -42,7 +43,7 @@ MakingForm.prototype.showObamaForm = function(){
     $(".free_area").show();
     $(".free_area").attr("id","Obama");
     
-    $(".free_area textarea").load("Obama_speech2008.txt")
+    $(".free_area textarea").load("Obama_speech2008.txt");
     $(".free_area .measure").val(measure_template);
     $(".free_area .cutting").each(function(index,element){
         $(this).val(words[index])});
