@@ -1,0 +1,82 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>D3 Test</title>
+<script src="d3.v3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<style> svg {background-color: #222222}</style>
+</head>
+<body>
+
+<div class="field"></div>
+
+
+<b>1 Mode:</b> 
+<label><input type="radio" name="radio" value="#DNA_sequence" checked>DNA sequence</label>
+<label><input type="radio" name="radio" value="#Obama">Obama's speech</label>
+<label><input type="radio" name="radio" value="#free">Free</label>
+</P>
+
+
+<form method="post" id="DNA_sequence">
+<b>2 Put on DNA sequence (default is pCRII vecter):</b><br/>
+<textarea cols=100 rows=4 class="sequence" ></textarea>
+<br/>
+<b>3 Choose restriction enzymes in each well. (first well is a measure):</b><br/>
+<div id="select_boxes">
+<input type="text" class="measure" style="width: 150px" value=130,560,2020,2320,4360,6560,9420,23130></input>
+<select name="enzymes" id="enzymes0" class="cutting" style="width: 80px">
+<option value="GAATTC" class="1" id="EcoRI">EcoRI</option> //テストとしてIDで取得しただけ。
+<option value="CCWGG" class="0" id="EcoRII">EcoRII</option>
+<option value="GGATCC" class="1" id="BamHI">BamHI</option>
+<option value="AAGCTT" class="1" id="HindIII">HindIII</option>
+<option value="TCGA" class="1" id="TaqI">TaqI</option>
+<option value="GCGGCCGC" class="2" id="NotI">NotI</option>
+<option value="GANTCA" class="1" id="HinfI">HinfI</option>
+<option value="GATC" class="0" id="Sau3A">Sau3A</option>
+<option value="CAGCTG" class="3" id="PvuII">PvuII</option>
+<option value="CCCGGG" class="3" id="SmaI">SmaI</option>
+<option value="GGCC" class="2" id="HaeIII">HaeIII</option>
+<option value="GACGC" class="2" id="HgaI">HgaI</option>
+<option value="AGCT" class="2" id="AluI">AluI</option>
+<option value="GATATC" class="3" id="EcoRV">EcoRV</option>
+<option value="GGTACC" class="5" id="KpnI">KpnI</option>
+<option value="CTGCAG" class="5" id="PstI">PstI</option>
+<option value="GAGCTC" class="5" id="SacI">SacI</option>
+<option value="GTCGAC" class="1" id="SalI">SalI</option>
+<option value="AGTACT" class="3" id="ScaI">ScaI</option>
+<option value="ACTAGT" class="1" id="SpeI">SpeI</option>
+<option value="GCATGC" class="5" id="SphI">SphI</option>
+<option value="AGGCCT" class="3" id="StuI">StuI</option>
+<option value="TCTAGA" class="1" id="XbaI">XbaI</option>
+</select> 
+</div>
+</form>
+
+
+<form method="post" id="free" class="free_area">
+<b>2 Text:<br/></b>
+<textarea cols=100 rows=4 class="sequence"></textarea><br/>
+<b>3 Choose words to cut the text:</b><br/>
+<input type="text" class="measure" style="width:150px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+<input type=text class="cutting" style="width:100px;"></input>
+</form>
+
+
+<div>
+<input type="button" value="Turn ON" id="subButton"/>
+<input type="button" value="Reset" id="reset"/>
+</div>
+
+</ul>
+
+<script src="electrophoresis.js"></script>
+</body>
+</html>
