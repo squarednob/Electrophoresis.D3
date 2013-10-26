@@ -35,8 +35,6 @@ MakingForm.prototype.showFreeForm = function(){
         $(".free_area .cutting").each(function(index,element){
             $(this).val("");
          });
-         
-        
 };
 
 MakingForm.prototype.showObamaForm = function(){
@@ -99,77 +97,74 @@ $(function(){
         
         displayGel(len_seq_container);
     });
-
 });
 
 
 var cutSequences = function(){
     var len_seq_container_proto = [];
-    
-    //assign measure into 0.
-    len_seq_container_proto[0] = makeMeasureContainer(radio_switch);
+
+    //make a masure container
+    (function(){
+            var parsed_measure = [];
+            
+            var measure = $(radio_switch + " .measure").val();
+            var measure_container = measure.split(",");
+            
+            for(var i=0; i<measure_container.length; i++){
+                parsed_measure[i] = parseInt(measure_container[i]);
+            }
+            
+            //assign measure into 0
+            len_seq_container_proto[0] =  parsed_measure;
+            }
+    )();
     
     //assign selected cuttted secuence.
-    $(radio_switch + " .cutting").each(function(index,element){
+    (function(){
         var where_to_cut = null;
-        var cuttings = $(element).val().toUpperCase();
-
-        var cuttings_id = $("option:selected",element).text();
-        if ($("#"+cuttings_id).attr("class") == "1"||"2"||"3"||"4"||"5"||"0") {
-            where_to_cut = $("#"+cuttings_id).attr("class");
-        }
-        len_seq_container_proto[index+1] = cutSeq(cuttings,where_to_cut);
-    });
+        var cuttings;
+        var DNA_seq = $(radio_switch + " .sequence").val().toUpperCase();
+           
+        $(radio_switch + " .cutting").each(function(index,element){
+            cuttings = $(element).val().toUpperCase();
     
-    return len_seq_container_proto;
-};
-
-var makeMeasureContainer = function(){
-    var parsed_measure = [];
+            var cuttings_id = $("option:selected",element).text();
+            if ($("#"+cuttings_id).attr("class") == "1"||"2"||"3"||"4"||"5"||"0") {
+                where_to_cut = $("#"+cuttings_id).attr("class");
+            }
+        
+            //配列取得と制限酵素によるカット関数 //
+            (function(){
+                var len_seq = [];
+             
+                var splitted = DNA_seq.split(cuttings);
+                for (var i=0; i < splitted.length; i++){
+                    splitted[i] = splitted[i].replace(/\s*/g, "");
+                    len_seq[i] = splitted[i].length;
+                
+                    //distribute vanished sequence by split.
+                    if(where_to_cut){
+                        var left = parseInt(where_to_cut);
+                        var right = cuttings.length - parseInt(where_to_cut);
+                        if(len_seq.length == 1){
+                            len_seq[0] += left+right;
+                        } else{
+                            for(var j=0; j<len_seq.length-1;j++){
+                                len_seq[j] += left;
+                            }
+                            for(j=1; j<len_seq.length;j++){
+                                len_seq[j] += right;
+                            }
+                        }
+                    }
+                }
+                len_seq_container_proto[index+1] =  len_seq;
+                
+            })();
+        });
+    })();
     
-    var measure = $(radio_switch + " .measure").val();
-    var measure_container = measure.split(",");
-    
-    for(var i=0; i<measure_container.length; i++){
-        parsed_measure[i] = parseInt(measure_container[i]);
-    }
-    
-    return parsed_measure;
-};
-
-
-//配列取得と制限酵素によるカット関数 //
-var cutSeq = function(cuttings,where_to_cut){
-    var len_seq = [];
-    var DNA_seq = $(radio_switch + " .sequence").val().toUpperCase();
-
-    var splitted = DNA_seq.split(cuttings);
-    for (var i=0; i < splitted.length; i++){
-        splitted[i] = splitted[i].replace(/\s*/g, "");
-        len_seq[i] = splitted[i].length;
-    }
-    
-    //distribute vanished sequence by split.
-    return distributeCuttedSequence(cuttings,len_seq,where_to_cut);
-
-};
-
-var distributeCuttedSequence = function(seq_value,len_seq,where_to_cut){
-     if(where_to_cut){
-         var left = parseInt(where_to_cut);
-         var right = seq_value.length - parseInt(where_to_cut);
-         if(len_seq.length == 1){
-             len_seq[0] += left+right;
-         } else{
-             for(var i=0; i<len_seq.length-1;i++){
-                 len_seq[i] += left;
-             }
-             for(i=1; i<len_seq.length;i++){
-                 len_seq[i] += right;
-             }
-         }
-     }
-     return len_seq;
+    return len_seq_container_proto;    
 };
 
 //ディスプレイ関数。
