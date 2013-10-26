@@ -1,12 +1,12 @@
 var radio_switch;
-var measure_template = "10,20,50,100";
+var measure_template = "100,500, 1000,5000,10000";
 
-//マージンと縦横長さの設定：
+//margin
 var margin = {top: 40, right: 10, bottom: 30, left: 10},
 width = 360 - margin.left - margin.right,
 height = 500 - margin.top - margin.bottom;
 
-//マージンありの画面設定：
+//canvas
 var svg = d3.select(".field").append("svg")
 .attr("id","s")
 .attr("width", width + margin.left + margin.right)
@@ -40,12 +40,11 @@ MakingForm.prototype.showFreeForm = function(){
 };
 
 MakingForm.prototype.showObamaForm = function(){
-    var words = ["USA","nuclear","security","privacy","growth","public","global"];
-    
+    var words = ["world","liberty","Yes we can","McCain","America","public","global"];
     $(".free_area").show();
     $(".free_area").attr("id","Obama");
     
-    $(".free_area textarea").val("Obabmacare");
+    $(".free_area textarea").load("Obama_speech2008.txt")
     $(".free_area .measure").val(measure_template);
     $(".free_area .cutting").each(function(index,element){
         $(this).val(words[index])});
@@ -135,7 +134,6 @@ var makeMeasureContainer = function(){
         parsed_measure[i] = parseInt(measure_container[i]);
     }
     
-    console.log(parsed_measure);
     return parsed_measure;
 };
 
@@ -147,6 +145,7 @@ var cutSeq = function(cuttings,where_to_cut){
 
     var splitted = DNA_seq.split(cuttings);
     for (var i=0; i < splitted.length; i++){
+        splitted[i] = splitted[i].replace(/\s*/g, "");
         len_seq[i] = splitted[i].length;
     }
     

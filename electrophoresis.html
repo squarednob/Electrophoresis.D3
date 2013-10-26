@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>D3 Test</title>
-<script src="d3.v3.js" charset="utf-8"></script>
-<script src="jquery-1.10.1.js"></script>
+<script src="d3.v3.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <style> svg {background-color: #222222}</style>
 </head>
 <body>
@@ -12,18 +12,18 @@
 <div class="field"></div>
 
 
-
+1 
 <label><input type="radio" name="radio" value="#DNA_sequence" checked>DNA sequence</label>
-<label><input type="radio" name="radio" value="#Obama">Obama</label>
+<label><input type="radio" name="radio" value="#Obama">Obama's speech</label>
 <label><input type="radio" name="radio" value="#free">Free</label>
 </P>
 
 
 <form method="post" id="DNA_sequence">
-<b>DNA sequence:</b><br/>
+<b>2 DNA sequence:</b><br/>
 <textarea cols=100 rows=4 class="sequence" >GTCAAGAACAACTCAATGCACTCCTAGTCACTGTCCATAGCAATGCGCAGGACATAAGACGTTGACAGATAGATTGATTAGAGACTAGAAGCCAATCGAATTCACTTCTGGTTCCGCTTGGCAGGCGGATTTTCTAGATTGAGGTTGCTATTTTCCCGGAACCCCTCTGCCTCGTGCAGAATTCGAATGAGCAAGCGGAATTGTATGTCGGCCGAATTCACTTAGATACTGGCCCACTACCGGTGTTTCTTAACGTCGGCCGGGAGCTTTATTCAACGCGTCTTCGCACGGGGGTGACACCGAATTCTACGCTTCTGGAGGCGG</textarea>
 <br/>
-<b>Choose restriction enzymes in each well. (first well is a measure):</b><br/>
+<b>3 Choose restriction enzymes in each well. (first well is a measure):</b><br/>
 <div id="select_boxes">
 <input type="text" class="measure" style="width: 150px" value=10,200,300,2000,5000></input>
 <select name="enzymes" id="enzymes0" class="cutting" style="width: 80px">
@@ -56,9 +56,9 @@
 
 
 <form method="post" id="free" class="free_area">
-<b>Text:<br/></b>
+<b>2 Text:<br/></b>
 <textarea cols=100 rows=4 class="sequence"></textarea><br/>
-<b>Choose what words to cut the text in each well:</b><br/>
+<b>3 Choose what words to cut the text in each well:</b><br/>
 <input type="text" class="measure" style="width:150px;"></input>
 <input type=text class="cutting" style="width:100px;"></input>
 <input type=text class="cutting" style="width:100px;"></input>
